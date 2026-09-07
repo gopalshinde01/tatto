@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Sparkles, MoveHorizontal } from 'lucide-react';
 
 interface BeforeAfterSliderProps {
@@ -18,7 +18,21 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
 }) => {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
+  const [containerWidth, setContainerWidth] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.clientWidth);
+      }
+    };
+    updateWidth();
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   const handleMove = useCallback((clientX: number) => {
     if (!containerRef.current) return;
@@ -83,7 +97,7 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
             src={beforeImage}
             alt={beforeLabel}
             className="absolute inset-0 w-full h-full object-cover max-w-none"
-            style={{ width: containerRef.current ? `${containerRef.current.clientWidth}px` : '100%' }}
+            style={{ width: containerWidth ? `${containerWidth}px` : '100%' }}
           />
           <div className="absolute top-4 left-4 z-10 px-3 py-1.5 rounded-full bg-[#D97706]/90 backdrop-blur-md text-white text-xs font-semibold shadow-md">
             📷 {beforeLabel}

@@ -121,8 +121,8 @@ export const Footer: React.FC = () => {
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#78716C]">
           <p>© 2026 Gayatri Art Studio. All Rights Reserved. Crafted with care in India.</p>
           <div className="flex items-center gap-6">
-            <Link to="/gallery" className="hover:text-[#A8A29E]">Privacy Policy</Link>
-            <Link to="/gallery" className="hover:text-[#A8A29E]">Terms of Service</Link>
+            <Link to="/about" className="hover:text-[#A8A29E]">Studio Ethics & Policy</Link>
+            <Link to="/about" className="hover:text-[#A8A29E]">Terms of Service</Link>
             <Link to="/contact" className="hover:text-[#A8A29E]">Studio Support</Link>
           </div>
         </div>

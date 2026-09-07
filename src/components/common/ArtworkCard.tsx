@@ -13,6 +13,7 @@ export const ArtworkCard: React.FC<ArtworkCardProps> = ({ artwork }) => {
   const getCategoryColor = (cat: string) => {
     switch (cat) {
       case 'Tattoo': return 'bg-[#C85A32] text-white';
+      case 'Blood Painting': return 'bg-[#BE123C] text-white';
       case 'Rangoli': return 'bg-[#D97706] text-white';
       case 'Sketch': return 'bg-[#1E293B] text-white';
       case 'Portrait': return 'bg-[#9A3412] text-white';

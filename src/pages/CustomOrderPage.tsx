@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
   CheckCircle2, MessageSquare, Clock 
@@ -26,13 +26,6 @@ export const CustomOrderPage: React.FC = () => {
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [submittedRefId, setSubmittedRefId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const service = searchParams.get('service');
-    const style = searchParams.get('style');
-    if (service) setFormData(prev => ({ ...prev, serviceType: service as CategoryType }));
-    if (style) setFormData(prev => ({ ...prev, preferredStyle: style }));
-  }, [searchParams]);
 
   const processSteps = [
     { num: '01', title: 'Tell Us Your Idea', desc: 'Fill out the custom artwork form with your vision & notes.' },

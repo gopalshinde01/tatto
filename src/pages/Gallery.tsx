@@ -1,23 +1,25 @@
 import React, { useState, useMemo } from 'react';
 import { 
-  Filter, Search, ChevronLeft, ChevronRight, X 
+  Filter, Search, X 
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { SectionHeader } from '../components/common/SectionHeader';
 import { ArtworkCard } from '../components/common/ArtworkCard';
 
 export const Gallery: React.FC = () => {
-  const { artworks, setSelectedArtworkModal } = useApp();
+  const { artworks } = useApp();
   const [selectedFilter, setSelectedFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const filterOptions = [
     'All', 'Tattoo', 'Blood Painting', 'Rangoli', 'Sketch', 'Portrait', 
     'Popular', 'Latest', 'Traditional', 'Realistic', 'Minimal', 'Custom'
   ];
 
+  const [mountTime] = useState(() => Date.now());
+
   const filteredArtworks = useMemo(() => {
+    const cutoff = mountTime - 120 * 24 * 60 * 60 * 1000; // Artworks from recent 120 days
     return artworks.filter((art) => {
       // Search query matching
       const matchesSearch = 
@@ -37,7 +39,8 @@ export const Gallery: React.FC = () => {
         return (art.views && art.views > 400) || art.featured;
       }
       if (selectedFilter === 'Latest') {
-        return art.createdAt.startsWith('2026-02') || art.createdAt.startsWith('2026-03');
+        const itemDate = new Date(art.createdAt).getTime();
+        return !isNaN(itemDate) ? itemDate >= cutoff : true;
       }
       // Match style or tags
       return (
@@ -46,23 +49,7 @@ export const Gallery: React.FC = () => {
         art.tags?.some(tag => tag.toLowerCase().includes(selectedFilter.toLowerCase()))
       );
     });
-  }, [artworks, selectedFilter, searchQuery]);
-
-  const openLightbox = (index: number) => {
-    setLightboxIndex(index);
-  };
-
-  const handlePrev = () => {
-    if (lightboxIndex === null) return;
-    setLightboxIndex(prev => (prev === 0 ? filteredArtworks.length - 1 : (prev ?? 0) - 1));
-  };
-
-  const handleNext = () => {
-    if (lightboxIndex === null) return;
-    setLightboxIndex(prev => (prev === filteredArtworks.length - 1 ? 0 : (prev ?? 0) + 1));
-  };
-
-  const currentLightboxItem = lightboxIndex !== null ? filteredArtworks[lightboxIndex] : null;
+  }, [artworks, selectedFilter, searchQuery, mountTime]);
 
   return (
     <div className="pt-24 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
@@ -119,10 +106,8 @@ export const Gallery: React.FC = () => {
       {/* MASONRY ARTWORK GRID */}
       {filteredArtworks.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredArtworks.map((artwork, idx) => (
-            <div key={artwork.id} onClick={() => openLightbox(idx)}>
-              <ArtworkCard artwork={artwork} />
-            </div>
+          {filteredArtworks.map((artwork) => (
+            <ArtworkCard key={artwork.id} artwork={artwork} />
           ))}
         </div>
       ) : (
@@ -139,88 +124,6 @@ export const Gallery: React.FC = () => {
           >
             Reset Filters
           </button>
-        </div>
-      )}
-
-      {/* FULL-SCREEN LIGHTBOX MODAL WITH PREV / NEXT NAVIGATION */}
-      {currentLightboxItem && (
-        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
-          
-          {/* Close Lightbox */}
-          <button
-            onClick={() => setLightboxIndex(null)}
-            className="absolute top-5 right-5 z-50 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
-            aria-label="Close Lightbox"
-          >
-            <X className="w-6 h-6" />
-          </button>
-
-          {/* Prev Arrow */}
-          <button
-            onClick={handlePrev}
-            className="absolute left-4 sm:left-8 z-50 p-3.5 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
-            aria-label="Previous Artwork"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-
-          {/* Next Arrow */}
-          <button
-            onClick={handleNext}
-            className="absolute right-4 sm:right-8 z-50 p-3.5 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
-            aria-label="Next Artwork"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
-
-          {/* Lightbox Content Card */}
-          <div className="relative max-w-4xl w-full bg-[#1C1917] rounded-3xl overflow-hidden shadow-2xl border border-stone-800 flex flex-col md:flex-row max-h-[85vh]">
-            <div className="w-full md:w-3/5 bg-black flex items-center justify-center overflow-hidden min-h-[300px]">
-              <img
-                src={currentLightboxItem.image}
-                alt={currentLightboxItem.title}
-                className="w-full h-full object-contain max-h-[550px]"
-              />
-            </div>
-            <div className="w-full md:w-2/5 p-6 sm:p-8 flex flex-col justify-between overflow-y-auto text-white space-y-6">
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 text-xs font-bold rounded-full bg-[#C85A32] text-white">
-                    {currentLightboxItem.category}
-                  </span>
-                  <span className="px-3 py-1 text-xs font-medium rounded-full bg-stone-800 text-stone-300">
-                    {currentLightboxItem.style}
-                  </span>
-                </div>
-
-                <h3 className="font-serif text-2xl font-bold">{currentLightboxItem.title}</h3>
-                <p className="text-xs text-stone-300 leading-relaxed">{currentLightboxItem.description}</p>
-                
-                <div className="p-3 rounded-xl bg-stone-900 border border-stone-800 flex items-center justify-between">
-                  <span className="text-xs text-stone-400">Estimated Price:</span>
-                  <span className="text-lg font-serif font-bold text-[#D97706]">₹{currentLightboxItem.price.toLocaleString('en-IN')}</span>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-stone-800 space-y-3">
-                <button
-                  onClick={() => {
-                    const item = currentLightboxItem;
-                    setLightboxIndex(null);
-                    setSelectedArtworkModal(item);
-                  }}
-                  className="w-full py-3 rounded-full bg-gradient-to-r from-[#D97706] to-[#C85A32] text-white font-medium text-xs shadow-md"
-                >
-                  Request Similar Design
-                </button>
-
-                <p className="text-[11px] text-center text-stone-500">
-                  Use left/right arrows to navigate collection ({lightboxIndex! + 1} of {filteredArtworks.length})
-                </p>
-              </div>
-            </div>
-          </div>
-
         </div>
       )}
 

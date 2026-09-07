@@ -169,18 +169,6 @@ export const Header: React.FC = () => {
             >
               Contact
             </Link>
-
-            <Link 
-              to="/login" 
-              className={`px-3 py-2 text-sm font-medium transition-colors rounded-full flex items-center gap-1.5 ${
-                isActive('/login') 
-                  ? 'text-[#C85A32] bg-[#C85A32]/10 font-semibold' 
-                  : 'text-[#44403C] hover:text-[#C85A32]'
-              }`}
-            >
-              <User className="w-3.5 h-3.5" />
-              <span>Login</span>
-            </Link>
           </nav>
 
           {/* Right Action & Book Now CTA */}

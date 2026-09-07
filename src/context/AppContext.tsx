@@ -40,6 +40,7 @@ interface AppContextType {
   
   addMessage: (messageData: Omit<ContactMessage, 'id' | 'status' | 'createdAt'>) => void;
   updateMessageStatus: (id: string, status: 'Unread' | 'Read' | 'Replied') => void;
+  updatePricingTier: (id: string, updatedData: Partial<PricingTier>) => void;
   
   setSelectedArtworkModal: (artwork: Artwork | null) => void;
   showToast: (message: string, type?: 'success' | 'info' | 'error') => void;
@@ -72,7 +73,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return saved ? JSON.parse(saved) : INITIAL_TESTIMONIALS;
   });
 
-  const [pricingTiers] = useState<PricingTier[]>(() => {
+  const [pricingTiers, setPricingTiers] = useState<PricingTier[]>(() => {
     const saved = localStorage.getItem('artgaathi_pricing');
     return saved ? JSON.parse(saved) : PORTRAIT_PRICING_TIERS;
   });
@@ -121,6 +122,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     localStorage.setItem('artgaathi_messages', JSON.stringify(messages));
   }, [messages]);
+
+  useEffect(() => {
+    localStorage.setItem('artgaathi_pricing', JSON.stringify(pricingTiers));
+  }, [pricingTiers]);
 
   const showToast = (message: string, type: 'success' | 'info' | 'error' = 'success') => {
     setToast({ message, type });
@@ -239,9 +244,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setMessages(prev => prev.map(m => m.id === id ? { ...m, status } : m));
   };
 
+  const updatePricingTier = (id: string, updatedData: Partial<PricingTier>) => {
+    setPricingTiers(prev => prev.map(tier => tier.id === id ? { ...tier, ...updatedData } : tier));
+    showToast('Pricing tier updated successfully');
+  };
+
   // Admin Auth (PIN default: 1234 or direct login)
   const loginAdmin = (pin: string): boolean => {
-    if (pin === '1234' || pin === 'admin' || pin.trim().length > 0) {
+    const cleanPin = pin.trim();
+    if (cleanPin === '1234' || cleanPin.toLowerCase() === 'admin') {
       setIsAdminLoggedIn(true);
       localStorage.setItem('artgaathi_admin_auth', 'true');
       showToast('Welcome to Gayatri Art Studio Admin Dashboard!');
@@ -323,6 +334,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       deleteTestimonial,
       addMessage,
       updateMessageStatus,
+      updatePricingTier,
       setSelectedArtworkModal,
       showToast,
       loginAdmin,

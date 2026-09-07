@@ -9,6 +9,8 @@ export const FloatingWhatsApp: React.FC = () => {
     switch (location.pathname) {
       case '/tattoo':
         return 'Hi, I found your Gayatri Art Studio website and would like to discuss a custom tattoo design.';
+      case '/blood-painting':
+        return 'Hi, I found your Gayatri Art Studio website and would like to discuss a memorial Blood Painting keepsake.';
       case '/rangoli':
         return 'Hi, I found your Gayatri Art Studio website and would like to discuss a rangoli artwork for an upcoming event.';
       case '/sketches':

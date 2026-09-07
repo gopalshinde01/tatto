@@ -32,6 +32,7 @@ export const LoginPage: React.FC = () => {
   const [clientError, setClientError] = useState('');
 
   // Admin form state
+  const [adminUsername, setAdminUsername] = useState('admin@gayatriartstudio.com');
   const [adminPin, setAdminPin] = useState('');
   const [adminError, setAdminError] = useState('');
 
@@ -188,7 +189,7 @@ export const LoginPage: React.FC = () => {
                 <div className="p-5 rounded-2xl bg-white border border-[#E7E0D8] shadow-sm">
                   <p className="text-xs text-[#78716C] uppercase font-bold tracking-wider">Active Commissions</p>
                   <p className="font-serif text-3xl font-extrabold text-[#C85A32] mt-2">
-                    {clientOrders.length > 0 ? clientOrders.length : orders.slice(0, 1).length}
+                    {clientOrders.length}
                   </p>
                   <p className="text-[11px] text-[#78716C] mt-1">Custom artwork requests</p>
                 </div>
@@ -196,7 +197,7 @@ export const LoginPage: React.FC = () => {
                 <div className="p-5 rounded-2xl bg-white border border-[#E7E0D8] shadow-sm">
                   <p className="text-xs text-[#78716C] uppercase font-bold tracking-wider">Studio Bookings</p>
                   <p className="font-serif text-3xl font-extrabold text-[#D97706] mt-2">
-                    {clientBookings.length > 0 ? clientBookings.length : bookings.slice(0, 1).length}
+                    {clientBookings.length}
                   </p>
                   <p className="text-[11px] text-[#78716C] mt-1">Appointments & consultations</p>
                 </div>
@@ -224,44 +225,57 @@ export const LoginPage: React.FC = () => {
                   </Link>
                 </div>
 
-                {(clientOrders.length > 0 ? clientOrders : orders.slice(0, 2)).map((ord) => (
-                  <div key={ord.id} className="p-5 rounded-2xl bg-[#FAF8F5] border border-[#E7E0D8] space-y-3">
-                    <div className="flex flex-wrap justify-between items-center gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-bold text-[#C85A32] bg-[#C85A32]/10 px-2.5 py-1 rounded-md">
-                          {ord.refId}
+                {clientOrders.length > 0 ? (
+                  clientOrders.map((ord) => (
+                    <div key={ord.id} className="p-5 rounded-2xl bg-[#FAF8F5] border border-[#E7E0D8] space-y-3">
+                      <div className="flex flex-wrap justify-between items-center gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-xs font-bold text-[#C85A32] bg-[#C85A32]/10 px-2.5 py-1 rounded-md">
+                            {ord.refId}
+                          </span>
+                          <span className="font-bold text-sm text-[#1C1917]">{ord.serviceType} Order</span>
+                        </div>
+                        <span className={`text-[11px] font-bold px-3 py-1 rounded-full ${
+                          ord.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' :
+                          ord.status === 'In Progress' ? 'bg-amber-100 text-amber-800' :
+                          'bg-stone-200 text-stone-800'
+                        }`}>
+                          Status: {ord.status}
                         </span>
-                        <span className="font-bold text-sm text-[#1C1917]">{ord.serviceType} Order</span>
-                      </div>
-                      <span className={`text-[11px] font-bold px-3 py-1 rounded-full ${
-                        ord.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' :
-                        ord.status === 'In Progress' ? 'bg-amber-100 text-amber-800' :
-                        'bg-stone-200 text-stone-800'
-                      }`}>
-                        Status: {ord.status}
-                      </span>
-                    </div>
-
-                    <p className="text-xs text-[#44403C] leading-relaxed">{ord.description}</p>
-
-                    <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-[#E7E0D8] text-xs">
-                      <div className="flex items-center gap-4 text-[#78716C]">
-                        {ord.budget && <span>Budget: <strong className="text-[#1C1917]">{ord.budget}</strong></span>}
-                        {ord.style && <span>Style: <strong className="text-[#1C1917]">{ord.style}</strong></span>}
                       </div>
 
-                      <a
-                        href={`https://wa.me/918788225420?text=Hi!%20I%20am%20checking%20the%20status%20of%20my%20order%20Ref%20ID%20${ord.refId}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs font-bold text-[#25D366] hover:underline"
-                      >
-                        <MessageSquare className="w-3.5 h-3.5" />
-                        <span>Chat regarding {ord.refId}</span>
-                      </a>
+                      <p className="text-xs text-[#44403C] leading-relaxed">{ord.description}</p>
+
+                      <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-[#E7E0D8] text-xs">
+                        <div className="flex items-center gap-4 text-[#78716C]">
+                          {ord.budget && <span>Budget: <strong className="text-[#1C1917]">{ord.budget}</strong></span>}
+                          {ord.style && <span>Style: <strong className="text-[#1C1917]">{ord.style}</strong></span>}
+                        </div>
+
+                        <a
+                          href={`https://wa.me/918788225420?text=Hi!%20I%20am%20checking%20the%20status%20of%20my%20order%20Ref%20ID%20${ord.refId}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 text-xs font-bold text-[#25D366] hover:underline"
+                        >
+                          <MessageSquare className="w-3.5 h-3.5" />
+                          <span>Chat regarding {ord.refId}</span>
+                        </a>
+                      </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 px-4 rounded-2xl bg-[#FAF8F5] border border-[#E7E0D8] space-y-2">
+                    <p className="font-bold text-sm text-[#1C1917]">No Artwork Requests Found</p>
+                    <p className="text-xs text-[#78716C]">You have not submitted any custom commissions with this account yet.</p>
+                    <Link
+                      to="/custom-order"
+                      className="inline-block mt-2 px-5 py-2 rounded-full bg-gradient-to-r from-[#D97706] to-[#C85A32] text-white text-xs font-semibold shadow"
+                    >
+                      Request Custom Artwork
+                    </Link>
                   </div>
-                ))}
+                )}
               </div>
 
               {/* CLIENT BOOKINGS LIST */}
@@ -280,39 +294,52 @@ export const LoginPage: React.FC = () => {
                   </Link>
                 </div>
 
-                {(clientBookings.length > 0 ? clientBookings : bookings.slice(0, 1)).map((bk) => (
-                  <div key={bk.id} className="p-5 rounded-2xl bg-[#FAF8F5] border border-[#E7E0D8] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-bold text-[#D97706] bg-[#D97706]/10 px-2.5 py-1 rounded-md">
-                          {bk.refId}
-                        </span>
-                        <span className="font-bold text-sm text-[#1C1917]">{bk.service}</span>
+                {clientBookings.length > 0 ? (
+                  clientBookings.map((bk) => (
+                    <div key={bk.id} className="p-5 rounded-2xl bg-[#FAF8F5] border border-[#E7E0D8] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-xs font-bold text-[#D97706] bg-[#D97706]/10 px-2.5 py-1 rounded-md">
+                            {bk.refId}
+                          </span>
+                          <span className="font-bold text-sm text-[#1C1917]">{bk.service}</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs text-[#78716C]">
+                          <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-[#C85A32]" /> {bk.date}</span>
+                          <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-[#D97706]" /> {bk.timeSlot}</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-3 text-xs text-[#78716C]">
-                        <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-[#C85A32]" /> {bk.date}</span>
-                        <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-[#D97706]" /> {bk.timeSlot}</span>
-                      </div>
-                    </div>
 
-                    <div className="flex items-center gap-3">
-                      <span className={`text-[11px] font-bold px-3 py-1 rounded-full ${
-                        bk.status === 'Confirmed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
-                      }`}>
-                        {bk.status}
-                      </span>
-                      <a
-                        href={`https://wa.me/918788225420?text=Hi!%20I%20have%20an%20appointment%20with%20Ref%20ID%20${bk.refId}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="p-2 rounded-xl bg-white border border-[#E7E0D8] text-[#25D366] hover:bg-emerald-50 transition-colors"
-                        title="Chat on WhatsApp"
-                      >
-                        <MessageSquare className="w-4 h-4" />
-                      </a>
+                      <div className="flex items-center gap-3">
+                        <span className={`text-[11px] font-bold px-3 py-1 rounded-full ${
+                          bk.status === 'Confirmed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                        }`}>
+                          {bk.status}
+                        </span>
+                        <a
+                          href={`https://wa.me/918788225420?text=Hi!%20I%20have%20an%20appointment%20with%20Ref%20ID%20${bk.refId}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="p-2 rounded-xl bg-white border border-[#E7E0D8] text-[#25D366] hover:bg-emerald-50 transition-colors"
+                          title="Chat on WhatsApp"
+                        >
+                          <MessageSquare className="w-4 h-4" />
+                        </a>
+                      </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 px-4 rounded-2xl bg-[#FAF8F5] border border-[#E7E0D8] space-y-2">
+                    <p className="font-bold text-sm text-[#1C1917]">No Upcoming Consultations</p>
+                    <p className="text-xs text-[#78716C]">You have no scheduled studio consultations or tattoo appointments.</p>
+                    <Link
+                      to="/booking"
+                      className="inline-block mt-2 px-5 py-2 rounded-full bg-[#1C1917] text-white text-xs font-semibold shadow"
+                    >
+                      Book an Appointment
+                    </Link>
                   </div>
-                ))}
+                )}
               </div>
             </div>
           ) : (
@@ -527,7 +554,8 @@ export const LoginPage: React.FC = () => {
                     </div>
                     <input
                       type="text"
-                      defaultValue="admin@gayatriartstudio.com"
+                      value={adminUsername}
+                      onChange={(e) => setAdminUsername(e.target.value)}
                       className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#292524] border border-[#3E3835] text-sm text-stone-200 focus:outline-none focus:border-[#D97706]"
                     />
                   </div>

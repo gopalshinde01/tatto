@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   BarChart3, Layers, ShoppingBag, Calendar, Users, Star, DollarSign, MessageSquare, 
   Settings, Plus, Trash2, Edit3, Lock, LogOut, X, Filter
@@ -13,7 +13,7 @@ export const AdminDashboard: React.FC = () => {
     addArtwork, updateArtwork, deleteArtwork,
     updateOrderStatus, deleteOrder,
     updateBookingStatus, deleteBooking,
-    deleteTestimonial
+    deleteTestimonial, updateMessageStatus
   } = useApp();
 
   const [activeTab, setActiveTab] = useState<
@@ -42,7 +42,26 @@ export const AdminDashboard: React.FC = () => {
   const completedOrders = orders.filter(o => o.status === 'Completed').length;
   const todayStr = new Date().toISOString().split('T')[0];
   const todaysBookings = bookings.filter(b => b.date === todayStr).length;
-  const totalCustomers = new Set([...orders.map(o => o.customerEmail), ...bookings.map(b => b.customerEmail)]).size;
+
+  // Real aggregate customer list from orders and bookings
+  const customerList = useMemo(() => {
+    const map = new Map<string, { name: string; email: string; phone: string; ordersCount: number; bookingsCount: number }>();
+    orders.forEach(o => {
+      const key = (o.customerEmail || o.customerPhone || o.customerName).toLowerCase();
+      const existing = map.get(key) || { name: o.customerName, email: o.customerEmail, phone: o.customerPhone, ordersCount: 0, bookingsCount: 0 };
+      existing.ordersCount += 1;
+      map.set(key, existing);
+    });
+    bookings.forEach(b => {
+      const key = (b.customerEmail || b.customerPhone || b.customerName).toLowerCase();
+      const existing = map.get(key) || { name: b.customerName, email: b.customerEmail, phone: b.customerPhone, ordersCount: 0, bookingsCount: 0 };
+      existing.bookingsCount += 1;
+      map.set(key, existing);
+    });
+    return Array.from(map.values());
+  }, [orders, bookings]);
+
+  const totalCustomers = customerList.length;
   const totalRevenue = orders.reduce((sum, o) => sum + (o.status === 'Completed' ? 4500 : 2500), 18500);
 
   // Authentication Gate Screen
@@ -500,14 +519,20 @@ export const AdminDashboard: React.FC = () => {
                       <th className="p-3">Customer</th>
                       <th className="p-3">Email</th>
                       <th className="p-3">Phone</th>
+                      <th className="p-3 text-center">Activity</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#E7E0D8]">
-                    {Array.from(new Set([...orders.map(o => o.customerName), ...bookings.map(b => b.customerName)])).map((name, idx) => (
+                    {customerList.map((cust, idx) => (
                       <tr key={idx} className="hover:bg-[#FAF8F5]">
-                        <td className="p-3 font-bold">{name}</td>
-                        <td className="p-3 text-[#78716C]">client@example.com</td>
-                        <td className="p-3 text-[#78716C]">+91 87882 25420</td>
+                        <td className="p-3 font-bold text-[#1C1917]">{cust.name}</td>
+                        <td className="p-3 text-[#78716C]">{cust.email}</td>
+                        <td className="p-3 text-[#78716C] font-mono">{cust.phone}</td>
+                        <td className="p-3 text-center">
+                          <span className="px-2 py-0.5 rounded-full bg-[#C85A32]/10 text-[#C85A32] font-semibold text-[10px]">
+                            {cust.ordersCount} orders • {cust.bookingsCount} bookings
+                          </span>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -559,13 +584,38 @@ export const AdminDashboard: React.FC = () => {
               <div className="space-y-3">
                 {messages.map(m => (
                   <div key={m.id} className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#E7E0D8] space-y-2">
-                    <div className="flex justify-between items-center">
-                      <h4 className="font-bold text-sm">{m.name} ({m.phone})</h4>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${m.status === 'Unread' ? 'bg-red-100 text-red-600' : 'bg-stone-200 text-stone-600'}`}>
-                        {m.status}
-                      </span>
+                    <div className="flex flex-wrap justify-between items-center gap-2">
+                      <div>
+                        <h4 className="font-bold text-sm text-[#1C1917]">{m.name}</h4>
+                        <p className="text-xs text-[#78716C]">{m.email} • {m.phone}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                          m.status === 'Unread' ? 'bg-rose-100 text-rose-700' :
+                          m.status === 'Replied' ? 'bg-emerald-100 text-emerald-700' :
+                          'bg-stone-200 text-stone-700'
+                        }`}>
+                          {m.status}
+                        </span>
+                        {m.status === 'Unread' && (
+                          <button
+                            onClick={() => updateMessageStatus(m.id, 'Read')}
+                            className="px-2.5 py-1 rounded-lg bg-white border border-[#E7E0D8] text-[10px] font-bold hover:bg-stone-100 transition-colors"
+                          >
+                            Mark Read
+                          </button>
+                        )}
+                        {m.status !== 'Replied' && (
+                          <button
+                            onClick={() => updateMessageStatus(m.id, 'Replied')}
+                            className="px-2.5 py-1 rounded-lg bg-[#25D366] text-white text-[10px] font-bold hover:bg-[#20ba59] transition-colors"
+                          >
+                            Mark Replied
+                          </button>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-xs text-[#44403C]">{m.message}</p>
+                    <p className="text-xs text-[#44403C] leading-relaxed pt-1 border-t border-[#E7E0D8]/60">{m.message}</p>
                   </div>
                 ))}
               </div>
