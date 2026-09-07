@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="studioGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D97706" />
+      <stop offset="100%" stop-color="#C85A32" />
+    </linearGradient>
+  </defs>
+  <!-- Background Circle -->
+  <circle cx="32" cy="32" r="30" fill="url(#studioGrad)" />
+  
+  <!-- Artist Palette & Brush Motif -->
+  <!-- Stylized Lotus / Feather Quill Art Stroke -->
+  <path d="M32 14 C32 14 22 26 22 36 C22 41.5 26.5 46 32 46 C37.5 46 42 41.5 42 36 C42 26 32 14 32 14 Z" fill="#FAF8F5" opacity="0.95"/>
+  <path d="M32 14 V46" stroke="#C85A32" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="32" cy="32" r="4" fill="#D97706" />
+  
+  <!-- Subtle artistic brush tip arc -->
+  <path d="M26 38 C28 42 36 42 38 38" stroke="#FAF8F5" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="32" cy="12" r="2.5" fill="#FAF8F5" />
+</svg>

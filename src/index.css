@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #FAF8F5;
+    color: #1C1917;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, .font-heading {
+    font-family: 'Playfair Display', 'Cormorant Garamond', serif;
+  }
+}
+
+/* Custom Utilities & Art Studio Styling */
+.font-serif-title {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.font-serif-elegant {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.bg-studio-offwhite {
+  background-color: #FAF8F5;
+}
+
+.bg-studio-warm {
+  background-color: #F4EFEA;
+}
+
+.bg-studio-dark {
+  background-color: #1C1917;
+}
+
+.text-studio-terracotta {
+  color: #C85A32;
+}
+
+.text-studio-ochre {
+  color: #D97706;
+}
+
+.text-studio-navy {
+  color: #1E293B;
+}
+
+.bg-studio-terracotta {
+  background-color: #C85A32;
+}
+
+.bg-studio-ochre {
+  background-color: #D97706;
+}
+
+.border-studio-warm {
+  border-color: #E7E0D8;
+}
+
+/* Paper / Canvas Texture Effect */
+.bg-canvas-texture {
+  background-image: radial-gradient(#D97706 0.75px, transparent 0.75px), radial-gradient(#C85A32 0.75px, #FAF8F5 0.75px);
+  background-size: 30px 30px;
+  background-position: 0 0, 15px 15px;
+  background-opacity: 0.05;
+}
+
+.ink-border {
+  border-image: linear-gradient(to right, #D97706, #C85A32) 1;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF8F5;
+}
+::-webkit-scrollbar-thumb {
+  background: #D97706;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B45309;
+}
